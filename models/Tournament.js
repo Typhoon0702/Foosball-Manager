@@ -43,28 +43,124 @@ class Tournament {
 
   generateMatches() {
     this.matches = [];
-    // Simple single elimination bracket generation
+    
+    if (this.type === 'single-elimination') {
+      this.generateSingleEliminationBracket();
+    } else if (this.type === 'round-robin') {
+      this.generateRoundRobinMatches();
+    } else if (this.type === 'double-elimination') {
+      this.generateDoubleEliminationBracket();
+    }
+  }
+
+  generateSingleEliminationBracket() {
     const teams = [...this.teams];
     let round = 1;
+    let currentTeams = teams;
     
-    while (teams.length > 1) {
+    // Shuffle teams for random seeding
+    currentTeams = this.shuffleArray(currentTeams);
+    
+    while (currentTeams.length > 1) {
       const roundMatches = [];
-      for (let i = 0; i < teams.length; i += 2) {
-        if (i + 1 < teams.length) {
-          const match = new Match(teams[i], teams[i + 1], round);
+      const nextRoundTeams = [];
+      
+      for (let i = 0; i < currentTeams.length; i += 2) {
+        if (i + 1 < currentTeams.length) {
+          const match = new Match(currentTeams[i], currentTeams[i + 1], round);
+          match.tournamentId = this.id;
           roundMatches.push(match);
         } else {
           // Odd number of teams, one gets a bye
-          const match = new Match(teams[i], null, round);
-          match.winner = teams[i];
+          const match = new Match(currentTeams[i], null, round);
+          match.tournamentId = this.id;
+          match.winner = currentTeams[i];
           match.status = 'completed';
+          match.team1Score = 1;
+          match.team2Score = 0;
           roundMatches.push(match);
+          nextRoundTeams.push(currentTeams[i]);
         }
       }
+      
       this.matches.push(...roundMatches);
-      teams.length = Math.ceil(teams.length / 2);
+      currentTeams = nextRoundTeams;
       round++;
     }
+  }
+
+  generateRoundRobinMatches() {
+    const teams = [...this.teams];
+    let matchId = 1;
+    
+    // Generate all possible match combinations
+    for (let i = 0; i < teams.length; i++) {
+      for (let j = i + 1; j < teams.length; j++) {
+        const match = new Match(teams[i], teams[j], 1);
+        match.tournamentId = this.id;
+        match.matchNumber = matchId++;
+        this.matches.push(match);
+      }
+    }
+  }
+
+  generateDoubleEliminationBracket() {
+    // Simplified double elimination - starts with single elimination
+    this.generateSingleEliminationBracket();
+    
+    // Add losers bracket matches (simplified implementation)
+    const losersBracketMatches = [];
+    let round = 1;
+    
+    // This is a simplified version - full double elimination is complex
+    this.matches.forEach(match => {
+      if (match.status === 'completed' && match.winner) {
+        const loserMatch = new Match(match.loser, null, round + 100); // +100 to distinguish from winners bracket
+        loserMatch.tournamentId = this.id;
+        losersBracketMatches.push(loserMatch);
+      }
+    });
+    
+    this.matches.push(...losersBracketMatches);
+  }
+
+  shuffleArray(array) {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }
+
+  getBracketData() {
+    const bracket = {
+      rounds: [],
+      type: this.type
+    };
+    
+    if (this.type === 'single-elimination') {
+      const maxRound = Math.max(...this.matches.map(m => m.round));
+      
+      for (let round = 1; round <= maxRound; round++) {
+        const roundMatches = this.matches.filter(m => m.round === round);
+        bracket.rounds.push({
+          round: round,
+          matches: roundMatches.map(match => ({
+            id: match.id,
+            team1: match.team1,
+            team2: match.team2,
+            team1Score: match.team1Score,
+            team2Score: match.team2Score,
+            winner: match.winner,
+            status: match.status,
+            scheduledTime: match.scheduledTime
+          }))
+        });
+      }
+    }
+    
+    return bracket;
   }
 
   completeTournament() {

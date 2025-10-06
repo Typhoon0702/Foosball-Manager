@@ -28,6 +28,118 @@
         .status-badge {
             font-size: 0.8rem;
         }
+        
+        /* Bracket Styles */
+        .bracket-container {
+            overflow-x: auto;
+            padding: 20px 0;
+        }
+        
+        .bracket-round {
+            display: inline-block;
+            vertical-align: top;
+            margin-right: 40px;
+            min-width: 200px;
+        }
+        
+        .bracket-match {
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .bracket-match:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        
+        .bracket-match.completed {
+            border-color: #28a745;
+            background-color: #f8fff9;
+        }
+        
+        .bracket-match.in-progress {
+            border-color: #ffc107;
+            background-color: #fffdf5;
+        }
+        
+        .bracket-team {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .bracket-team:last-child {
+            border-bottom: none;
+        }
+        
+        .bracket-team.winner {
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        .bracket-score {
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .round-title {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #495057;
+        }
+        
+        /* Statistics Styles */
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+        
+        .leaderboard-rank {
+            font-weight: bold;
+            color: #007bff;
+            min-width: 30px;
+        }
+        
+        .leaderboard-name {
+            flex: 1;
+            margin: 0 15px;
+        }
+        
+        .leaderboard-stats {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
     </style>
 </head>
 <body>
@@ -53,6 +165,9 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" onclick="showSection('players')">Players</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('statistics')">Statistics</a>
                     </li>
                 </ul>
             </div>
@@ -189,6 +304,94 @@
         
         <div class="row" id="playersList">
             <!-- Players will be loaded here -->
+        </div>
+    </section>
+
+    <!-- Tournament Bracket Section -->
+    <section id="bracket" class="container my-5" style="display: none;">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="fas fa-sitemap me-2"></i>Tournament Bracket</h2>
+                    <button class="btn btn-secondary" onclick="showSection('tournaments')">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Tournaments
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="bracketContainer">
+            <!-- Bracket will be loaded here -->
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section id="statistics" class="container my-5" style="display: none;">
+        <div class="row">
+            <div class="col-12">
+                <h2><i class="fas fa-chart-bar me-2"></i>Statistics & Leaderboards</h2>
+            </div>
+        </div>
+        
+        <!-- Overview Stats -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Overview</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row" id="overviewStats">
+                            <!-- Overview stats will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Leaderboards -->
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Team Leaderboard</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="teamLeaderboard">
+                            <!-- Team leaderboard will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Player Leaderboard</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="playerLeaderboard">
+                            <!-- Player leaderboard will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Matches -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Recent Matches</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="recentMatches">
+                            <!-- Recent matches will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 

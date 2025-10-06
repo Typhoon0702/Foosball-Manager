@@ -86,6 +86,12 @@ function loadSectionData(sectionName) {
         case 'players':
             loadPlayers();
             break;
+        case 'statistics':
+            loadStatistics();
+            break;
+        case 'bracket':
+            loadBracket();
+            break;
     }
 }
 
@@ -479,9 +485,201 @@ async function loadMatches() {
     }
 }
 
+// Bracket functions
+let currentTournamentId = null;
+
+function showBracket(tournamentId) {
+    currentTournamentId = tournamentId;
+    showSection('bracket');
+}
+
+async function loadBracket() {
+    if (!currentTournamentId) {
+        document.getElementById('bracketContainer').innerHTML = '<p>No tournament selected</p>';
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/tournaments/${currentTournamentId}/bracket`);
+        const result = await response.json();
+
+        if (result.success) {
+            renderBracket(result.data);
+        } else {
+            showAlert('Failed to load bracket: ' + result.error, 'danger');
+        }
+    } catch (error) {
+        showAlert('Error loading bracket: ' + error.message, 'danger');
+    }
+}
+
+function renderBracket(bracketData) {
+    const container = document.getElementById('bracketContainer');
+    
+    if (bracketData.type === 'single-elimination') {
+        container.innerHTML = `
+            <div class="bracket-container">
+                ${bracketData.rounds.map(round => `
+                    <div class="bracket-round">
+                        <div class="round-title">Round ${round.round}</div>
+                        ${round.matches.map(match => `
+                            <div class="bracket-match ${match.status}">
+                                <div class="bracket-team ${match.winner === match.team1 ? 'winner' : ''}">
+                                    <span>${match.team1 || 'TBD'}</span>
+                                    <span class="bracket-score">${match.team1Score || 0}</span>
+                                </div>
+                                <div class="bracket-team ${match.winner === match.team2 ? 'winner' : ''}">
+                                    <span>${match.team2 || 'TBD'}</span>
+                                    <span class="bracket-score">${match.team2Score || 0}</span>
+                                </div>
+                                ${match.status === 'scheduled' ? `
+                                    <div class="text-center mt-2">
+                                        <button class="btn btn-sm btn-primary" onclick="startMatch('${match.id}')">Start Match</button>
+                                    </div>
+                                ` : ''}
+                                ${match.status === 'in-progress' ? `
+                                    <div class="text-center mt-2">
+                                        <button class="btn btn-sm btn-success" onclick="completeMatch('${match.id}')">Complete Match</button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    } else {
+        container.innerHTML = `<p>Bracket type ${bracketData.type} not yet supported in visualization</p>`;
+    }
+}
+
+// Statistics functions
+async function loadStatistics() {
+    try {
+        await Promise.all([
+            loadOverviewStats(),
+            loadTeamLeaderboard(),
+            loadPlayerLeaderboard(),
+            loadRecentMatches()
+        ]);
+    } catch (error) {
+        showAlert('Error loading statistics: ' + error.message, 'danger');
+    }
+}
+
+async function loadOverviewStats() {
+    try {
+        const response = await fetch('/api/statistics/overview');
+        const result = await response.json();
+
+        if (result.success) {
+            const stats = result.data;
+            document.getElementById('overviewStats').innerHTML = `
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number">${stats.tournaments.total}</div>
+                        <div class="stat-label">Total Tournaments</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number">${stats.tournaments.active}</div>
+                        <div class="stat-label">Active Tournaments</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number">${stats.teams.total}</div>
+                        <div class="stat-label">Total Teams</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number">${stats.players.total}</div>
+                        <div class="stat-label">Total Players</div>
+                    </div>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error loading overview stats:', error);
+    }
+}
+
+async function loadTeamLeaderboard() {
+    try {
+        const response = await fetch('/api/statistics/leaderboard/teams');
+        const result = await response.json();
+
+        if (result.success) {
+            const leaderboard = result.data;
+            document.getElementById('teamLeaderboard').innerHTML = leaderboard.map((team, index) => `
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank">#${index + 1}</div>
+                    <div class="leaderboard-name">${team.name}</div>
+                    <div class="leaderboard-stats">
+                        ${team.wins}W-${team.losses}L (${team.winPercentage.toFixed(1)}%)
+                    </div>
+                </div>
+            `).join('');
+        }
+    } catch (error) {
+        console.error('Error loading team leaderboard:', error);
+    }
+}
+
+async function loadPlayerLeaderboard() {
+    try {
+        const response = await fetch('/api/statistics/leaderboard/players');
+        const result = await response.json();
+
+        if (result.success) {
+            const leaderboard = result.data;
+            document.getElementById('playerLeaderboard').innerHTML = leaderboard.map((player, index) => `
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank">#${index + 1}</div>
+                    <div class="leaderboard-name">${player.name}</div>
+                    <div class="leaderboard-stats">
+                        ${player.wins}W-${player.losses}L (${player.winPercentage.toFixed(1)}%)
+                    </div>
+                </div>
+            `).join('');
+        }
+    } catch (error) {
+        console.error('Error loading player leaderboard:', error);
+    }
+}
+
+async function loadRecentMatches() {
+    try {
+        const response = await fetch('/api/statistics/recent-matches?limit=5');
+        const result = await response.json();
+
+        if (result.success) {
+            const matches = result.data;
+            document.getElementById('recentMatches').innerHTML = matches.map(match => `
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                    <div>
+                        <strong>${match.team1} vs ${match.team2}</strong>
+                        <br>
+                        <small class="text-muted">${formatDate(match.completedAt)}</small>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-success">${match.team1Score} - ${match.team2Score}</span>
+                        <br>
+                        <small class="text-muted">Winner: ${match.winner}</small>
+                    </div>
+                </div>
+            `).join('');
+        }
+    } catch (error) {
+        console.error('Error loading recent matches:', error);
+    }
+}
+
 // Placeholder functions for future features
 function viewTournament(id) {
-    showAlert('info', 'Tournament details view coming soon!');
+    showBracket(id);
 }
 
 function viewTeam(id) {

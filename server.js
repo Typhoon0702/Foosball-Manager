@@ -23,6 +23,7 @@ app.use('/api/tournaments', require('./routes/tournaments'));
 app.use('/api/teams', require('./routes/teams'));
 app.use('/api/matches', require('./routes/matches'));
 app.use('/api/players', require('./routes/players'));
+app.use('/api/statistics', require('./routes/statistics'));
 
 // Serve the main page
 app.get('/', (req, res) => {

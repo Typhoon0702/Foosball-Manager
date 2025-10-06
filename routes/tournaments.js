@@ -198,6 +198,53 @@ router.post('/:id/complete', (req, res) => {
   }
 });
 
+// GET /api/tournaments/:id/bracket - Get tournament bracket
+router.get('/:id/bracket', (req, res) => {
+  const tournament = tournaments.find(t => t.id === req.params.id);
+  if (!tournament) {
+    return res.status(404).json({
+      success: false,
+      error: 'Tournament not found'
+    });
+  }
+
+  try {
+    const bracketData = tournament.getBracketData();
+    res.json({
+      success: true,
+      data: bracketData
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// GET /api/tournaments/:id/matches - Get tournament matches
+router.get('/:id/matches', (req, res) => {
+  const tournament = tournaments.find(t => t.id === req.params.id);
+  if (!tournament) {
+    return res.status(404).json({
+      success: false,
+      error: 'Tournament not found'
+    });
+  }
+
+  try {
+    res.json({
+      success: true,
+      data: tournament.matches.map(m => m.toJSON())
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // DELETE /api/tournaments/:id - Delete tournament
 router.delete('/:id', (req, res) => {
   const tournamentIndex = tournaments.findIndex(t => t.id === req.params.id);

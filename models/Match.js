@@ -10,8 +10,13 @@ class Match {
     this.team2Score = 0;
     this.status = 'scheduled'; // 'scheduled', 'in-progress', 'completed'
     this.winner = null;
+    this.loser = null;
     this.scheduledTime = null;
     this.completedAt = null;
+    this.tournamentId = null;
+    this.matchNumber = null;
+    this.duration = null; // in minutes
+    this.notes = '';
     this.createdAt = new Date();
   }
 
@@ -37,11 +42,24 @@ class Match {
     
     if (this.team1Score > this.team2Score) {
       this.winner = this.team1;
+      this.loser = this.team2;
     } else if (this.team2Score > this.team1Score) {
       this.winner = this.team2;
+      this.loser = this.team1;
     } else {
       // Handle tie if needed
       this.winner = null;
+      this.loser = null;
+    }
+    
+    // Update team statistics
+    if (this.winner && this.loser) {
+      this.winner.addWin();
+      this.loser.addLoss();
+      this.winner.addGoalsFor(this.winner === this.team1 ? this.team1Score : this.team2Score);
+      this.winner.addGoalsAgainst(this.winner === this.team1 ? this.team2Score : this.team1Score);
+      this.loser.addGoalsFor(this.loser === this.team1 ? this.team1Score : this.team2Score);
+      this.loser.addGoalsAgainst(this.loser === this.team1 ? this.team2Score : this.team1Score);
     }
   }
 
