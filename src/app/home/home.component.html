@@ -1,21 +1,29 @@
-<main class="welcome">
-    <div class="content">
-        <div class="content__logo animated rotateIn">
-            <img src="../../assets/foosball_logo.svg" class="img-fluid" alt="logo">
-        </div>
-
-        <div class="content__info animated bounceIn">
-            <h3 class="welcome-text">Welcome on <br /> Foosball Manager!</h3>
-        </div>
-
-        <div class="content__buttons">
-            <button (click)="auth.SigninWithGoogle()" class="btn-login">
-                <img src="../../assets/icons/google.svg" class="icon img-fluid">
-                Join with Google
-            </button>
-        </div>
-
+<div class="home-container">
+  <div class="hero-section">
+    <h1>{{ title }}</h1>
+    <p class="description">{{ description }}</p>
+    
+    <div class="features">
+      <div class="feature-card">
+        <h3>Tournament Management</h3>
+        <p>Create and manage foosball tournaments with ease</p>
+      </div>
+      
+      <div class="feature-card">
+        <h3>Team Organization</h3>
+        <p>Organize teams and track player statistics</p>
+      </div>
+      
+      <div class="feature-card">
+        <h3>Match Scheduling</h3>
+        <p>Schedule matches and track results</p>
+      </div>
     </div>
-</main>
-
-<app-footer></app-footer>
+    
+    <div class="cta-section">
+      <button class="cta-button" routerLink="/dashboard">
+        Get Started
+      </button>
+    </div>
+  </div>
+</div>

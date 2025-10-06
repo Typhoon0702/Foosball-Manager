@@ -1,37 +1,26 @@
-import { Component, OnInit } from '@angular/core';
-import { CrudService } from '../crud.service';
-import { AuthService } from '../auth-service.service';
-import { TournamentUser } from '../services/user';
-import { Router } from '@angular/router';
-import { MessagingService } from '../messaging.service';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit {
-  tournaments: any;
-  logged: boolean;
-  user: TournamentUser;
-  constructor(public auth: AuthService, private crud: CrudService, public router: Router) { }
+export class DashboardComponent {
+  title = 'Dashboard';
+  tournaments = [
+    { id: 1, name: 'Spring Championship', status: 'Active', teams: 8 },
+    { id: 2, name: 'Summer League', status: 'Completed', teams: 12 },
+    { id: 3, name: 'Fall Tournament', status: 'Upcoming', teams: 6 }
+  ];
 
-
-  ngOnInit() {
-    this.crud.getTournaments().subscribe(data => {
-      this.tournaments = data.map(e => {
-        return {
-          id: e.payload.doc.id,
-          name: e.payload.doc.data()['name'],
-          teams: e.payload.doc.data()['teams'].length,
-          type: e.payload.doc.data()['type'],
-        };
-      });
-    });    
+  getActiveTournaments(): number {
+    return this.tournaments.filter(t => t.status === 'Active').length;
   }
 
-  goToTournament(tId) {
-    this.router.navigate(['/tournament'], { queryParams: { id: tId } });
+  getTotalTeams(): number {
+    return this.tournaments.reduce((sum, t) => sum + t.teams, 0);
   }
-
 }

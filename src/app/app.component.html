@@ -1,4 +1,17 @@
-<app-navbar></app-navbar>
-<div class="animate fadeIn">
-  <router-outlet></router-outlet>
+<div class="app-container">
+  <header class="app-header">
+    <h1>{{ title }}</h1>
+    <nav>
+      <a routerLink="/">Home</a>
+      <a routerLink="/dashboard">Dashboard</a>
+    </nav>
+  </header>
+  
+  <main class="app-main">
+    <router-outlet></router-outlet>
+  </main>
+  
+  <footer class="app-footer">
+    <p>&copy; 2024 Foosball Manager - Updated to Angular 19</p>
+  </footer>
 </div>

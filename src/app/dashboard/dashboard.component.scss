@@ -1,65 +1,96 @@
-@import "../../variable.scss";
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
 
-.dashboard {
-  .content {
-    height: 85vh;
-    &__top-box {
-      display: flex;
-      justify-content: center;
-      margin-top: 10px;
-      margin-bottom: 50px;
-      border-bottom: 2px solid $borderGrey;
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
 
-      h3 {
-        font-family: $roboto;
-      }
+.stat-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  
+  h3 {
+    color: #666;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+  }
+  
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #1976d2;
+    margin: 0;
+  }
+}
+
+.tournaments-section {
+  h2 {
+    color: #333;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.tournament-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.tournament-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+  
+  h3 {
+    color: #1976d2;
+    margin-bottom: 1rem;
+  }
+}
+
+.tournament-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  .status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    
+    &.status-active {
+      background-color: #e8f5e8;
+      color: #2e7d32;
     }
-
-    &__list-tournaments {
-      .table {
-        background-color: white;
-        &__header {
-          border-bottom: 2px solid;
-          .head-col {
-            font-weight: bold;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            border-right: 1px solid black;
-            justify-content: center;
-            color: $blue;
-            &:last-child {
-              border-right: 0;
-            }
-          }
-        }
-        &__content {
-          overflow: auto;
-          max-height: 70vh;
-          .single-row {
-            display: flex;
-            align-items: center;
-            &:nth-child(odd) {
-              background-color: rgba(128, 128, 128, 0.09);
-            }
-            .data-col {
-              word-break: break-all;
-              &:first-child {
-                text-align: center;
-                img {
-                  max-width: 90px;
-                }
-              }
-              &:nth-child(2) {
-                span {
-                  cursor: pointer;
-                  text-decoration: underline;
-                }
-              }
-            }
-          }
-        }
-      }
+    
+    &.status-completed {
+      background-color: #e3f2fd;
+      color: #1976d2;
     }
+    
+    &.status-upcoming {
+      background-color: #fff3e0;
+      color: #f57c00;
+    }
+  }
+  
+  .teams {
+    color: #666;
+    font-size: 0.875rem;
   }
 }

@@ -1,29 +1,36 @@
-<main class="container">
-        <div class="text-center">
-                <h3> 🏆 Active Tournaments 🏆 </h3>
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th scope="col">Type</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Teams</th>
-                                <th scope="col">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let t of tournaments">
-                                <td>{{t.type}}</td>
-                                <td>{{t.name}}</td>
-                                <td>{{t.teams}}</td>         
-                                <td><button class="btn btn-dark" type="button" (click)="goToTournament(t.id)">Show</button></td>                       
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-    <div class="content" *ngIf="tournaments == null">
-        <loading></loading>
+<div class="dashboard-container">
+  <h1>{{ title }}</h1>
+  
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3>Total Tournaments</h3>
+      <p class="stat-number">{{ tournaments.length }}</p>
     </div>
-</main>
+    
+    <div class="stat-card">
+      <h3>Active Tournaments</h3>
+      <p class="stat-number">{{ getActiveTournaments() }}</p>
+    </div>
+    
+    <div class="stat-card">
+      <h3>Total Teams</h3>
+      <p class="stat-number">{{ getTotalTeams() }}</p>
+    </div>
+  </div>
+  
+  <div class="tournaments-section">
+    <h2>Recent Tournaments</h2>
+    
+    <div class="tournament-list">
+      <div *ngFor="let tournament of tournaments" class="tournament-card">
+        <h3>{{ tournament.name }}</h3>
+        <div class="tournament-info">
+          <span class="status" [class]="'status-' + tournament.status.toLowerCase()">
+            {{ tournament.status }}
+          </span>
+          <span class="teams">{{ tournament.teams }} teams</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
